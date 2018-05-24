@@ -287,6 +287,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Approach.cs" />
+    <Compile Include="Assets\FireflyController.cs" />
     <Compile Include="Assets\ShipGenerator.cs" />
     <Compile Include="Assets\Sky FX Pack\Scripts\LightBeamsControlScript.cs" />
     <Compile Include="Assets\Sky FX Pack\Scripts\LookAtBehaviour.cs" />
