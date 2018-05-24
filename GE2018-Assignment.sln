@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2017
+# Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GE2018-Assignment", "GE2018-Assignment.csproj", "{9E88091A-EE77-A4A6-4CDC-5C7F3A056068}"
 EndProject
 Global
