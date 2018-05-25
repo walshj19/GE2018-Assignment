@@ -9,6 +9,8 @@ public class FireflyController : MonoBehaviour {
 	public Vector3 direction;
 	public Vector3 torqueForce = new Vector3();
 	public float approachDistance = 500;
+	public float objectRadius = 100;
+	public Vector3 avoidForce = new Vector3();
 
 	// Use this for initialization
 	void Start () {
@@ -17,10 +19,15 @@ public class FireflyController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		// call one of the behaviour methods
 		Arrive();
+		DetectObstruction();
+
+		// apply the calculated movement and rotation forces to the rigidbody
 		Rigidbody rb = GetComponent<Rigidbody>();
 		rb.AddForce(transform.forward * currentForce);
 		rb.AddTorque(torqueForce);
+		rb.AddTorque(avoidForce);
 	}
 
 	void Seek ()
@@ -40,7 +47,7 @@ public class FireflyController : MonoBehaviour {
 		torqueForce = plane * angle;
 
 		// scale the speed based on the size of the angle
-		currentForce = maxForce / (angle / 180);
+		currentForce = maxForce;
 	}
 
 	void Arrive()
@@ -75,15 +82,39 @@ public class FireflyController : MonoBehaviour {
 		currentForce = currentForce * (180 / (180 - angle));
 	}
 
+	void DetectObstruction()
+	{
+		RaycastHit hit;
+
+		Vector3 castEndPoint = transform.position + (transform.forward * GetComponent<Rigidbody>().velocity.magnitude * 3);
+
+		// check for a hit with a capsule cast
+		if (Physics.CapsuleCast(transform.position, castEndPoint, objectRadius, castEndPoint - transform.position, out hit, castEndPoint.magnitude))
+		{
+			//if a hit is detected
+			Vector3 obstructionVector = hit.transform.position - transform.position;
+			Debug.Log("hit detected at point" + hit.transform.position);
+
+			// generate a force to avoid the obstruction
+			float angle = Vector3.Angle(transform.forward, obstructionVector);
+			Vector3 plane = Vector3.Cross(transform.forward, obstructionVector);
+			avoidForce = plane * angle * (hit.distance / GetComponent<Rigidbody>().velocity.magnitude) * -1;
+		}
+		else
+		{
+			avoidForce = new Vector3();
+		}
+	}
+
 	void OnDrawGizmosSelected()
 	{
 		if (torqueForce != null)
 		{
 			Gizmos.color = Color.yellow;
 			// draw the current forward vector
-			Gizmos.DrawLine(transform.position, transform.position + (transform.forward*100));
+			Gizmos.DrawLine(transform.position, transform.position + (GetComponent<Rigidbody>().velocity * 3));
 			// draw the torque vector at the end of the forward vector
-			Gizmos.DrawLine(transform.position + (transform.forward * 100), transform.position + (transform.forward * 100) + torqueForce);
+			//Gizmos.DrawLine(transform.position + (transform.forward * 100), transform.position + (transform.forward * 100) + torqueForce);
 		}
 	}
 }
